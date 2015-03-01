@@ -7,9 +7,34 @@ module.exports = (env) ->
   assert = env.require 'cassert'
   _ = env.require('lodash')
   homeduino = require('homeduino')
+  avrUploader = require('avrUploader')
+  fs = require('fs')
+  http = require('http')
   M = env.matcher
 
   Board = homeduino.Board
+
+  class updater extends env.? #i dont know which class it should be
+    download: (url, dest, cb)=>
+      file = fs.createWriteStream(dest)
+      request = http.get(url, (response)=>
+        response.pipe(file)
+        file.on('finish' =>
+          file.close(cb)))
+
+    upload: (file)=>
+      hex = fs.readFileSync '#file', 'ascii'
+      avrUploader hexToBin(hex), @config.serialport, (err) ->
+        env.logger.error 'error', err if err
+        env.logger.error hexToBin(hex).length
+
+    hexToBin = (code) ->
+      data = ''
+      for line in code.split '\n'
+        count = parseInt line.slice(1, 3), 16
+        if count and line.slice(7, 9) is '00'
+          data += line.slice 9, 9 + 2 * count
+      new Buffer(data, 'hex')
 
   class HomeduinoPlugin extends env.plugins.Plugin
 
