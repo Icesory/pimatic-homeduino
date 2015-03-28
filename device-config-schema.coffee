@@ -235,6 +235,10 @@ module.exports = {
             options:
               description: "The protocol options"
               type: "object"
+      showBatteryState:
+        description: "activates the battery state in the Gui when the protocol support it"
+        type: "boolean"
+        default: false
       processingTemp: 
         description: "
           expression that can preprocess the value, $value is a placeholder for the temperature 
