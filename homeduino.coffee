@@ -569,7 +569,7 @@ module.exports = (env) ->
 
       hasTemperature = false
       hasHumidity = false
-      haslowBattery
+      haslowBattery = false
       for p in config.protocols
         _protocol = Board.getRfProtocol(p.name)
         unless _protocol?
@@ -634,8 +634,10 @@ module.exports = (env) ->
                 @emit "humidity", @_humidity
               )
             if event.values.lowBattery?
-              @_lowBattery = event.values.lowBattery
-              @emit "lowBattery", if @_lowBattery is true then "Low" else "Good"
+              batt = if event.values.lowBattery is true then "Low" else "Good"
+              unless batt is @_lowBattery
+                @_lowBattery = batt
+                @emit "lowBattery", batt
             @_lastReceiveTime = now
       )
       super()
