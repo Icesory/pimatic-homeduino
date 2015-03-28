@@ -565,7 +565,7 @@ module.exports = (env) ->
       @name = config.name
       @_temperatue = lastState?.temperature?.value
       @_humidity = lastState?.humidity?.value
-      @_lowBattery = lastState?.lowBattery?.value or false
+      @_lowBattery = lastState?.lowBattery?.value or 'Good'
 
       hasTemperature = false
       hasHumidity = false
@@ -603,7 +603,6 @@ module.exports = (env) ->
           unit: ''
           acronym: 'Batt'
         }
-        env.logger.debug("attributes lowBattery aktiv")
 
       @board.on('rf', (event) =>
         for p in @config.protocols
