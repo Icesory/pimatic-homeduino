@@ -596,12 +596,14 @@ module.exports = (env) ->
           unit: '%'
           acronym: 'RH'
         }
-      if haslowBattery and @config.showBatteryState
+      if haslowBattery
         @attributes.lowBattery = {
           description: "the state of the battery"
-          type: "string"
-          unit: ''
+          type: "boolean"
           acronym: 'Batt'
+          labels: ['Low', 'Good']
+          label: 'Battery'
+          showOnGui: @config.showBatteryState
         }
 
       @board.on('rf', (event) =>
@@ -633,10 +635,9 @@ module.exports = (env) ->
                 @emit "humidity", @_humidity
               )
             if event.values.lowBattery?
-              batt = if event.values.lowBattery is true then "Low" else "Good"
-              unless batt is @_lowBattery
-                @_lowBattery = batt
-                @emit "lowBattery", batt
+              unless event.values.lowBattery is @_lowBattery
+                @_lowBattery = event.values.lowBattery
+                @emit "lowBattery", @_lowBattery
             @_lastReceiveTime = now
       )
       super()
